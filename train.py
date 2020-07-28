@@ -490,33 +490,5 @@ for epoch in range(args.epoch):
 
 
 # restore pretrained model
-saver = tf.train.Saver()
-pretrain_dir = './pretrained_ckpts/model-450000'
-saver.restore(sess, pretrain_dir)
-
-
-# ## Visualize Test with Pretrained Model
-
-# In[ ]:
-
-
-# set trainable=False and get output heatmap
-with tf.variable_scope(tf.get_variable_scope(), reuse=True):
-    test_heatmaps, test_heatmaps_all = cpm_mobilenet_v2(input_image, False)
-
-num_steps = len(train_indices) // 1
-
-for epoch in range(1):
-    for i in range(num_steps):
-        feed_dict = generate_batch(train_data, train_indices, i, batchsize=1)    
-        background = feed_dict[input_image][0]
-        flags_info = feed_dict[input_flags][0]
-        
-        start = time.time()
-        heatmaps, outputs = sess.run([input_heatmaps, test_heatmaps], feed_dict = feed_dict)
-        duration = time.time() - start
-        print('processing time = %.4f' % duration)
-        
-        visualize_gt_and_output(background, heatmaps[0], outputs[0], flags_info, delay=10, draw_keypoint=True)
-cv2.destroyAllWindows()
+v2.destroyAllWindows()
 

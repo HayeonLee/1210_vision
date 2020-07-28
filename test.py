@@ -457,34 +457,7 @@ train_indices = np.arange(len(train_data))
 num_steps = len(train_indices) // args.batchsize
 
 
-# ## Start Training
 
-# In[ ]:
-
-
-for epoch in range(args.epoch):
-    # shuffle all elements per epoch
-    shuffled_indices = train_indices.copy()
-    get_rng().shuffle(shuffled_indices)
-        
-    for i in range(num_steps):
-        feed_dict = generate_batch(train_data, shuffled_indices, i)
-        start = time.time()
-        _, loss, loss_lastlayer_heat = sess.run([train_op, total_loss, total_loss_ll_heat], 
-                                            feed_dict = feed_dict)
-        duration = time.time() - start
-    
-    # print train info per epoch
-    print('epoch: %d, loss = %.2f, last_heat_loss = %.2f, duration = %.4f' % (epoch, loss, loss_lastlayer_heat, duration))      
-
-    # visualize ground truth heatmap and output heatmap
-    background = feed_dict[input_image][0]
-    flags_info = feed_dict[input_flags][0]
-    heatmaps, outputs = sess.run([input_heatmaps, pred_heat], feed_dict = feed_dict)  
-    visualize_gt_and_output(background, heatmaps[0], outputs[0], flags_info)
-
-
-# ## Load Pretrained model
 
 # In[ ]:
 

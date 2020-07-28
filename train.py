@@ -2,18 +2,6 @@
 # coding: utf-8
 
 # ## Import Modules
-
-# In[5]:
-
-
-#get_ipython().system('pip uninstall tensorflow -y')
-#get_ipython().system('pip uninstall tensorflow-gpu -y')
-
-
-# In[ ]:
-
-
-#get_ipython().system('pip install tensorflow-gpu==1.8 # import miscellaneous modules')
 import cv2
 import os
 import numpy as np
@@ -31,10 +19,6 @@ from dataset import Dataset
 from tools import *
 
 # ## Parse Arguments
-
-# In[ ]:
-
-
 # arguments for training model
 parser = argparse.ArgumentParser(description='Hyperparameter for training a Mobilenet V2')
 parser.add_argument('--input_width',      help='Rescale the image in x-axis.', type=int, default=192)
@@ -54,10 +38,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
 
 # ## Preprocess the Image Data
-
-# In[ ]:
-
-
 def pad_and_reshape(img, coord, target_shape=(args.input_width, args.input_height)):
     # compute how much padding need.
     h,w,_ = img.shape
@@ -140,19 +120,11 @@ def generate_batch(train_data, train_indices, step, batchsize=args.batchsize):
 
 
 # ## Call Dataset
-
-# In[ ]:
-
-
 d = Dataset()
 train_data = d.load_frame_data(task='train')
 
 
 # ## Base Function of Mobilenet V2
-
-# In[ ]:
-
-
 _init_xavier = tf.contrib.layers.xavier_initializer()
 _init_norm = tf.truncated_normal_initializer(stddev=0.01)
 _init_zero = slim.init_ops.zeros_initializer()
@@ -277,9 +249,6 @@ def inverted_bottleneck(inputs, up_channel_rate, channels, subsample, k_s=3, sco
 
 # ## MobileNet V2 Network
 
-# In[ ]:
-
-
 N_KPOINTS = 14
 STAGE_NUM = 6
 out_channel_ratio = lambda d: max(int(d * 0.75), 8)
@@ -386,10 +355,6 @@ def cpm_mobilenet_v2(input, trainable):
 
 
 # ## Placeholder
-
-# In[ ]:
-
-
 input_image = tf.placeholder(tf.float32, [None, args.input_height, args.input_width, 3])    # [batchsize, H, W, C]
 input_coord = tf.placeholder(tf.float32, [None, 14, 2])         # [batchsize, num_kps, 2]
 input_flags = tf.placeholder(tf.float32, [None, 14])            # [batchsize, num_kps]
@@ -399,20 +364,12 @@ learning_rate = tf.train.exponential_decay(float(args.lr), global_step,
 
 
 # ## Output
-
-# In[ ]:
-
-
 input_heatmaps = render_gaussian_heatmap(input_coord)
 with tf.variable_scope(tf.get_variable_scope(), reuse=False):
     _, pred_heatmaps_all = cpm_mobilenet_v2(input_image, True)
 
 
 # ## Loss
-
-# In[ ]:
-
-
 losses = []
 for idx, pred_heat in enumerate(pred_heatmaps_all):
     reshaped_flags = tf.reshape(input_flags, [-1, 1, 1, 14])
@@ -424,10 +381,6 @@ total_loss_ll_heat = tf.reduce_sum(loss_l2) / args.batchsize
 
 
 # ## Optimization
-
-# In[ ]:
-
-
 optim = tf.train.AdamOptimizer(learning_rate, epsilon = 1e-8)
 grads = optim.compute_gradients(total_loss)
 apply_gradients_op = optim.apply_gradients(grads, global_step=global_step)
@@ -443,10 +396,6 @@ with tf.control_dependencies(update_ops):
 
 
 # ## Create session before training
-
-# In[ ]:
-
-
 sess = get_session()
 
 # initialize variables
@@ -458,9 +407,6 @@ num_steps = len(train_indices) // args.batchsize
 
 
 # ## Start Training
-
-# In[ ]:
-
 
 for epoch in range(args.epoch):
     # shuffle all elements per epoch
@@ -483,12 +429,5 @@ for epoch in range(args.epoch):
     heatmaps, outputs = sess.run([input_heatmaps, pred_heat], feed_dict = feed_dict)  
     visualize_gt_and_output(background, heatmaps[0], outputs[0], flags_info)
 
-
-# ## Load Pretrained model
-
-# In[ ]:
-
-
-# restore pretrained model
-v2.destroyAllWindows()
+cv2.destroyAllWindows()
 

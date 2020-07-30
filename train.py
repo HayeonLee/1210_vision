@@ -262,14 +262,14 @@ def cpm_mobilenet_v2(input, trainable):
     net = convb(input, 3, 3, out_channel_ratio(32), 2, name="Conv2d_0")
     with tf.variable_scope('MobilenetV2'):
 
-        # 128, 112
+        # input size=112, up channel rate=1, channel=12, kernel size=3
         mv2_branch_0 = slim.stack(net, inverted_bottleneck,
                                   [
                                       (1, out_channel_ratio(16), 0, 3),
                                       (1, out_channel_ratio(16), 0, 3)
                                   ], scope="MobilenetV2_part_0")
 
-        # 64, 56
+        # input size=56, up channel rate=6, channel=18, kernel size=3
         mv2_branch_1 = slim.stack(mv2_branch_0, inverted_bottleneck,
                                   [
                                       (up_channel_ratio(6), out_channel_ratio(24), 1, 3),
@@ -279,7 +279,7 @@ def cpm_mobilenet_v2(input, trainable):
                                       (up_channel_ratio(6), out_channel_ratio(24), 0, 3),
                                   ], scope="MobilenetV2_part_1")
 
-        # 32, 28
+        # input size=28, up channel rate=6, channel=24, kernel size=3
         mv2_branch_2 = slim.stack(mv2_branch_1, inverted_bottleneck,
                                   [
                                       (up_channel_ratio(6), out_channel_ratio(32), 1, 3),
@@ -289,7 +289,7 @@ def cpm_mobilenet_v2(input, trainable):
                                       (up_channel_ratio(6), out_channel_ratio(32), 0, 3),
                                   ], scope="MobilenetV2_part_2")
 
-        # 16, 14
+        # input size=14, up channel rate=6, channel=48, kernel size=3
         mv2_branch_3 = slim.stack(mv2_branch_2, inverted_bottleneck,
                                   [
                                       (up_channel_ratio(6), out_channel_ratio(64), 1, 3),
@@ -299,7 +299,7 @@ def cpm_mobilenet_v2(input, trainable):
                                       (up_channel_ratio(6), out_channel_ratio(64), 0, 3),
                                   ], scope="MobilenetV2_part_3")
 
-        # 8, 7
+        # input size=7, up channel rate=6, channel=72, kernel size=3
         mv2_branch_4 = slim.stack(mv2_branch_3, inverted_bottleneck,
                                   [
                                       (up_channel_ratio(6), out_channel_ratio(96), 1, 3),
